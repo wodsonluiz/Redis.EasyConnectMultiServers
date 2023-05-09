@@ -1,0 +1,27 @@
+version: 1.0.{build}
+build:
+  verbosity: minimal
+
+before_build:
+- nuget restore
+- choco install opencover.portable
+- choco install codecov
+
+pull_requests:
+  do_not_increment_build_number: true
+skip_non_tags: true
+image: Visual Studio 2022
+configuration: Release
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  version_prefix: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+build_script:
+- cmd: >-
+    dotnet --version
+    dotnet build --verbosity m 
