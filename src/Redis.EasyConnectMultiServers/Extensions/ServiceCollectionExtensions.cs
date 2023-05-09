@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Redis.EasyConnectMultiServers.Abstractions;
 using Redis.EasyConnectMultiServers.Implementations;
 using StackExchange.Redis.Extensions.Core.Configuration;
@@ -7,26 +5,45 @@ using StackExchange.Redis.Extensions.System.Text.Json;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Extension of IServiceCollection for build IRedisProviderMultiServers
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddRedisProviderMultiServers(this IServiceCollection services, 
-        IEnumerable<RedisConfiguration> configurations) 
+        /// <summary>
+        /// Setup RedisClientFactory and RedisProviderMultiServers 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="redisConfiguration"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddRedisProviderMultiServers(this IServiceCollection services, IEnumerable<RedisConfiguration> redisConfiguration) 
         {
-            services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(configurations);
+            services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(redisConfiguration);
             services.AddSingleton<IRedisProviderMultiServers, RedisProviderMultiServers>();
 
             return services;
         }
 
-        public static IServiceCollection AddRedisProviderMultiServers(this IServiceCollection services, 
-        RedisConfiguration configuration) 
+        /// <summary>
+        /// Setup RedisClientFactory and RedisProviderMultiServers 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="redisConfiguration"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddRedisProviderMultiServers(this IServiceCollection services, RedisConfiguration redisConfiguration) 
         {
-            services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(configuration);
+            services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(redisConfiguration);
             services.AddSingleton<IRedisProviderMultiServers, RedisProviderMultiServers>();
 
             return services;
         }
 
+        /// <summary>
+        /// Setup RedisClientFactory and RedisProviderMultiServers 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="redisConfigurationFactory"></param>
+        /// <returns></returns>
         public static IServiceCollection AddRedisProviderMultiServers(this IServiceCollection services, Func<IServiceProvider, IEnumerable<RedisConfiguration>> redisConfigurationFactory) 
         {
             services.AddStackExchangeRedisExtensions<SystemTextJsonSerializer>(redisConfigurationFactory);
