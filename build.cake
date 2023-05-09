@@ -1,40 +1,86 @@
-var target = Argument("target", "Test");
-var configuration = Argument("configuration", "Release");
+var target = Argument("Target", "Default");
+var configuration =
+    HasArgument("Configuration") ? Argument<string>("Configuration") :
+    EnvironmentVariable("Configuration", "Release");
 
-//////////////////////////////////////////////////////////////////////
-// TASKS
-//////////////////////////////////////////////////////////////////////
+var artefactsDirectory = Directory("./Artefacts");
 
 Task("Clean")
-    .WithCriteria(c => HasArgument("rebuild"))
+    .Description("Cleans the artefacts, bin and obj directories.")
     .Does(() =>
-{
-    CleanDirectory($"./src/Redis.EasyConnectMultiServers/bin/{configuration}");
-});
+    {
+        CleanDirectory(artefactsDirectory);
+        DeleteDirectories(GetDirectories("**/bin"), new DeleteDirectorySettings() { Force = true, Recursive = true });
+        DeleteDirectories(GetDirectories("**/obj"), new DeleteDirectorySettings() { Force = true, Recursive = true });
+    });
 
-Task("Build")
+Task("Restore")
+    .Description("Restores NuGet packages.")
     .IsDependentOn("Clean")
     .Does(() =>
-{
-    DotNetBuild("Redis.EasyConnectMultiServers.sln", new DotNetBuildSettings
     {
-        Configuration = configuration,
+        DotNetRestore();
     });
-});
 
-Task("Test")
-    .IsDependentOn("Build")
+Task("Build")
+    .Description("Builds the solution.")
+    .IsDependentOn("Restore")
     .Does(() =>
-{
-    DotNetTest("Redis.EasyConnectMultiServers.sln", new DotNetTestSettings
     {
-        Configuration = configuration,
-        NoBuild = true,
+        DotNetBuild(
+            ".",
+            new DotNetBuildSettings()
+            {
+                Configuration = configuration,
+                NoRestore = true,
+            });
     });
-});
 
-//////////////////////////////////////////////////////////////////////
-// EXECUTION
-//////////////////////////////////////////////////////////////////////
+// Task("Test")
+//     .Description("Runs unit tests and outputs test results to the artefacts directory.")
+//     .DoesForEach(GetFiles("./Tests/**/*.csproj"), project =>
+//     {
+//         DotNetTest(
+//             project.ToString(),
+//             new DotNetTestSettings()
+//             {
+//                 Blame = true,
+//                 Collectors = new string[] { "XPlat Code Coverage" },
+//                 Configuration = configuration,
+//                 Loggers = new string[]
+//                 {
+//                     $"trx;LogFileName={project.GetFilenameWithoutExtension()}.trx",
+//                     $"html;LogFileName={project.GetFilenameWithoutExtension()}.html",
+//                 },
+//                 NoBuild = true,
+//                 NoRestore = true,
+//                 ResultsDirectory = artefactsDirectory,
+//             });
+//     });
+
+Task("Pack")
+    .Description("Creates NuGet packages and outputs them to the artefacts directory.")
+    .Does(() =>
+    {
+        DotNetPack(
+            ".",
+            new DotNetPackSettings()
+            {
+                Configuration = configuration,
+                IncludeSymbols = true,
+                MSBuildSettings = new DotNetMSBuildSettings()
+                {
+                    ContinuousIntegrationBuild = !BuildSystem.IsLocalBuild,
+                },
+                NoBuild = true,
+                NoRestore = true,
+                OutputDirectory = artefactsDirectory,
+            });
+    });
+
+Task("Default")
+    .Description("Cleans, restores NuGet packages, builds the solution, runs unit tests and then creates NuGet packages.")
+    .IsDependentOn("Build")
+    .IsDependentOn("Pack");
 
 RunTarget(target);
