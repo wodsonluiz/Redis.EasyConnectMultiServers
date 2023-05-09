@@ -1,0 +1,90 @@
+name: Build and Push
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build-${{matrix.os}}
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build
+      shell: pwsh
+    
+    - name: Pack
+      run: dotnet pack
+      shell: pwsh
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: my-artifact-debug
+        path: src/Redis.EasyConnectMultiServers/bin/Debug
+
+    - name: "Publish Artefacts"
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: my-artifact-debug
+        path: src/Redis.EasyConnectMultiServers/bin/Debug
+      
+  push-github-packages:
+    name: "Push GitHub Packages"
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    environment:
+      name: "GitHub Packages"
+      url: https://github.com/wodsonluiz/Redis.EasyConnectMultiServers/packages
+    permissions:
+      packages: write
+    runs-on: windows-latest
+    steps:
+      - name: "Download Artefact"
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: "my-artifact-debug"
+      - name: "Dotnet NuGet Add Source"
+        run: dotnet nuget add source https://nuget.pkg.github.com/wodsonluiz/index.json --name GitHub --username wodsonluiz --password ${{secrets.PASSWORD_GITHUB}}
+        shell: pwsh
+      - name: "Dotnet NuGet Push"
+        run: dotnet nuget push .\*.nupkg --api-key ${{ github.token }} --source GitHub --skip-duplicate
+        shell: pwsh
+
+  push-nuget:
+    name: "Push NuGet Packages"
+    needs: build
+    if: github.event_name == 'release'
+    environment:
+      name: "NuGet"
+      url: https://www.nuget.org/packages/Redis.EasyConnectMultiServers
+    runs-on: windows-latest
+    steps:
+      - name: "Download Artefact"
+        uses: actions/download-artifact@v3.0.0
+        with:
+          name: "my-artifact-debug"
+      - name: "Dotnet NuGet Push"
+        run: |
+          Get-ChildItem .\ -Filter *.nupkg |
+          Where-Object { !$_.Name.Contains('preview') } |
+          ForEach-Object { dotnet nuget push $_ --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{secrets.TOKEN_NUGET}} }
+        shell: pwsh

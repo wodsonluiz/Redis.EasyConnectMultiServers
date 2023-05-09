@@ -1,0 +1,14 @@
+<Project>
+
+    <PropertyGroup>
+        <Title>Redis.EasyConnectMultiServers</Title>
+        <Authors>Wodson</Authors>
+        <Company>Wodson</Company>
+        <Copyright>Copyright © Wodson Luiz. All rights Reserved</Copyright>
+        <Description>Biblioteca para facilitar e realizar todas as operações de CRUD em multiplos servidores do Redis.</Description>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>redis, caching, dotnet, redis-client, redis-cache</PackageTags>
+        <RepositoryUrl>https://github.com/wodsonluiz/Redis.EasyConnectMultiServers</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    </PropertyGroup>
+</Project>
