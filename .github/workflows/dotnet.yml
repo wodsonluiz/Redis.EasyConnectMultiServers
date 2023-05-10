@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
       - name: "Checkout"
@@ -42,8 +42,6 @@ jobs:
       - name: "Dotnet Cake Build"
         run: dotnet cake --target=Build
         shell: pwsh
-      - name: "Upload coverage to Codecov"
-        uses: codecov/codecov-action@v3
       - name: "Dotnet Cake Pack"
         run: dotnet cake --target=Pack
         shell: pwsh
