@@ -1,16 +1,13 @@
-# Redis.EasyConnectMultiServers 
-
+# Redis.EasyConnectMultiServers
 ![Nuget](https://img.shields.io/nuget/dt/Redis.EasyConnectMultiServers)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/wodsonluiz/Redis.EasyConnectMultiServers/dotnet.yml)
 ![Nuget](https://img.shields.io/nuget/v/Redis.EasyConnectMultiServers)
 
-[PTBR Version](https://github.com/wodsonluiz/Redis.EasyConnectMultiServers/blob/main/README-PTB.md)
+Biblioteca para facilitar a integração com multiplos servidores do Redis, assim sendo fácil realizar todas as operações de crud.
 
-## Package for ease integration with multiple servers Redis. :package:
-
-### Configuration
-- `AddRedisProviderMultiServers`: Inject a singleton instance of `IRedisProviderMultiServers`.
-- `IRedisProviderMultiServers` Abstraction responsible for provider contracts that operations of CRUD in multiple servers 
+### Configuração
+- `AddRedisProviderMultiServers`: Injeta uma instância singleton de `IRedisProviderMultiServers`.
+- `IRedisProviderMultiServers` Abstração responsável por fornecer contratos que realiza as operações de CRUD em multiplos servidores
 
 ```csharp
 var configurations = new[]
@@ -42,7 +39,7 @@ var configurations = new[]
 services.AddRedisProviderMultiServers(configurations);
 ```
 
-### Exemple of use
+### Exemplo de uso
 
 ```csharp
 public class WeatherForecastController
@@ -54,8 +51,8 @@ public class WeatherForecastController
 }
 ```
 
-#### Write/ Replace
-- Write in all servers configured
+#### Escrever/ Atualizar
+- Vai escrever em todos os sevidores configurados.
 
 ```csharp
 await _redisProviderMultiServers.AddAsync(Guid.NewGuid().ToString(), "value");
@@ -65,7 +62,7 @@ await _redisProviderMultiServers.AddAsync(Guid.NewGuid().ToString(), "value");
 await _redisProviderMultiServers.ReplaceAsync(Guid.NewGuid().ToString(), "value");
 ```
 
-- Write only in default server: `IsDefault = true`
+- Vai escrever somente no servidor padrão: `IsDefault = true`
 
 ```csharp
 await _redisProviderMultiServers.AddDefaultClientAsync(Guid.NewGuid().ToString(), "value");
@@ -75,18 +72,18 @@ await _redisProviderMultiServers.AddDefaultClientAsync(Guid.NewGuid().ToString()
 await _redisProviderMultiServers.ReplaceDefaultClientAsync(Guid.NewGuid().ToString(), "value");
 ```
 
-#### Get
-- The get is performed from the _client default_: `IsDefault = true`.
-- The method responds as soon as it finds the key, not continuing with the get on other servers.
+#### Consulta
+- A consulta é realizada a partir do _client default_: `IsDefault = true`.
+- O método responde assim que encontra a chave, não seguindo com a consulta nos demais servidores. 
 
 ```csharp
 await _redisProviderMultiServers.GetMultiAsync<string>(guid.ToString());
 ```
 
-#### Remove
+#### Remover
 
-- Remove in all servers configured
-- Remove only in default server: `IsDefault = true`
+- Vai remover em todos os servidores configurados
+- Vai remover somente no cliente padrão: `IsDefault = true`
 
 ```csharp
 await _redisProviderMultiServers.RemoveAsync(key);

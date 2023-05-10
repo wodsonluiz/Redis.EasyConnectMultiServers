@@ -6,7 +6,7 @@
 
 	<PropertyGroup Label="Package">
 		<Product>Redis.EasyConnectMultiServers</Product>
-		<Description>Biblioteca para facilitar e realizar todas as operações de CRUD em multiplos servidores do Redis.</Description>
+		<Description>Package for ease integration with multiple servers Redis</Description>
 		<PackageTags>redis</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
