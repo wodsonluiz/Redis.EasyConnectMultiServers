@@ -80,7 +80,7 @@ await _redisProviderMultiServers.ReplaceDefaultClientAsync(Guid.NewGuid().ToStri
 - The method responds as soon as it finds the key, not continuing with the get on other servers.
 
 ```csharp
-await _redisProviderMultiServers.GetMultiAsync<string>(guid.ToString());
+await _redisProviderMultiServers.GetAsync<string>(guid.ToString());
 ```
 
 #### Remove
