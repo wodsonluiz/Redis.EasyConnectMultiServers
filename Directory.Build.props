@@ -21,12 +21,8 @@
         <RepositoryType>git</RepositoryType>
         <PackageReleaseNotes>https://github.com/wodsonluiz/Redis.EasyConnectMultiServers/releases</PackageReleaseNotes>
     </PropertyGroup>
-
+    
     <ItemGroup Label="Package References">
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-        <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
-        <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="8.0.5" />
-        <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="8.0.5" />
-        <PackageReference Include="StackExchange.Redis.Extensions.System.Text.Json" Version="8.0.5" />
+        <PackageReference Include="MinVer" PrivateAssets="all" Version="4.2.0" />
     </ItemGroup>
 </Project>
