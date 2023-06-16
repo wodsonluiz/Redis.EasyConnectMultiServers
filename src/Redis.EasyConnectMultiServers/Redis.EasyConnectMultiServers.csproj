@@ -14,7 +14,7 @@
 	<ItemGroup>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="StackExchange.Redis" Version="2.6.116" />
-        <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="8.0.5" />
+        <PackageReference Include="StackExchange.Redis.Extensions.AspNetCore" Version="9.1.0" />
         <PackageReference Include="StackExchange.Redis.Extensions.Core" Version="8.0.5" />
         <PackageReference Include="StackExchange.Redis.Extensions.System.Text.Json" Version="8.0.5" />
     </ItemGroup>
