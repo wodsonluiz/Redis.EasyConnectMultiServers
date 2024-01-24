@@ -16,42 +16,41 @@ namespace Redis.EasyConnectMultiServers.Implementations
         }
 
         public Task<bool> AddDefaultClientAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string>? tags = null) =>
-            AddAsync<T>(_databaseDefault, key, value, when, flag, tags);
-
+            AddAsync(_databaseDefault, key, value, when, flag, tags);
 
         public Task<bool> AddDefaultClientAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string>? tags = null) =>
-             AddAsync<T>(_databaseDefault, key, value, expiresIn, when, flag, tags);
+             AddAsync(_databaseDefault, key, value, expiresIn, when, flag, tags);
 
         public async Task<bool> AddAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string>? tags = null)
         {
-            var listTasks = new List<Task<bool>>();
+            var tasks = new List<Task<bool>>();
 
             foreach (var client in _redisClients)
             {
                 var result = base.AddAsync(client.GetDefaultDatabase(), key, value, when, flag, tags);
 
-                listTasks.Add(result);
+                tasks.Add(result);
             }
 
-            await Task.WhenAll(listTasks);
+            await Task.WhenAll(tasks);
 
-            return listTasks.Any() && listTasks.All(x => x.Result);
+            return tasks.Any() && tasks.TrueForAll(x => x.Result);
         }
 
         public async Task<bool> AddAsync<T>(string key, T value, TimeSpan expiresIn, When when = When.Always, CommandFlags flag = CommandFlags.None, HashSet<string>? tags = null)
         {
-            var listTasks = new List<Task<bool>>();
+            var tasks = new List<Task<bool>>();
 
             foreach (var client in _redisClients)
             {
                 var result = AddAsync(client.GetDefaultDatabase(), key, value, expiresIn, when, flag, tags);
 
-                listTasks.Add(result);
+                tasks.Add(result);
             }
 
-            await Task.WhenAll(listTasks);
+            await Task.WhenAll(tasks);
 
-            return listTasks.Any() && listTasks.All(x => x.Result);
+            return tasks.Any() && tasks.TrueForAll(x => x.Result);
         }
 
         public async Task<T> GetDefaultClientAsync<T>(string key, CommandFlags flag = CommandFlags.None) =>
@@ -75,56 +74,56 @@ namespace Redis.EasyConnectMultiServers.Implementations
 
         public async Task<bool> RemoveAsync(string key, CommandFlags flags = CommandFlags.None)
         {
-            var listTaks = new List<Task<bool>>();
+            var tasks = new List<Task<bool>>();
 
             foreach (var client in _redisClients)
             {
                 var result = RemoveAsync(client.GetDefaultDatabase(), key);
 
-                listTaks.Add(result);
+                tasks.Add(result);
             }
 
-            await Task.WhenAll(listTaks);
+            await Task.WhenAll(tasks);
 
-            return listTaks.Any() && listTaks.All(x => x.Result);
+            return tasks.Any() && tasks.TrueForAll(x => x.Result);
         }
 
         public Task<bool> ReplaceDefaultClientAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None) =>
-            ReplaceAsync<T>(_databaseDefault, key, value, when, flag);
+            ReplaceAsync(_databaseDefault, key, value, when, flag);
 
         public Task<bool> ReplaceDefaultClientAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None) =>
-            ReplaceAsync<T>(_databaseDefault, key, value, expiresAt, when, flag);
+            ReplaceAsync(_databaseDefault, key, value, expiresAt, when, flag);
 
         public async Task<bool> ReplaceAsync<T>(string key, T value, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
-            var listTaks = new List<Task<bool>>();
+            var tasks = new List<Task<bool>>();
 
             foreach (var client in _redisClients)
             {
                 var result = ReplaceAsync<T>(client.GetDefaultDatabase(), key, value, when, flag);
 
-                listTaks.Add(result);
+                tasks.Add(result);
             }
 
-            await Task.WhenAll(listTaks);
+            await Task.WhenAll(tasks);
 
-            return listTaks.Any() && listTaks.All(x => x.Result);
+            return tasks.Any() && tasks.TrueForAll(x => x.Result);
         }
 
         public async Task<bool> ReplaceAsync<T>(string key, T value, DateTimeOffset expiresAt, When when = When.Always, CommandFlags flag = CommandFlags.None)
         {
-            var listTaks = new List<Task<bool>>();
+            var tasks = new List<Task<bool>>();
 
             foreach (var client in _redisClients)
             {
-                var result = ReplaceAsync<T>(client.GetDefaultDatabase(), key, value, expiresAt, when, flag);
+                var result = ReplaceAsync(client.GetDefaultDatabase(), key, value, expiresAt, when, flag);
 
-                listTaks.Add(result);
+                tasks.Add(result);
             }
 
-            await Task.WhenAll(listTaks);
+            await Task.WhenAll(tasks);
 
-            return listTaks.Any() && listTaks.All(x => x.Result);
+            return tasks.Any() && tasks.TrueForAll(x => x.Result);
         }
     }
 }
